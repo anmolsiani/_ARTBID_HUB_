@@ -1,3 +1,349 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ff8a258133f78404fb98e875a8b8f7f4cfe6d4cd5afce4bea12e0e65c5e9fa90
-size 17822
+'use client'
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Mail, Lock, User, Eye, EyeOff, ArrowLeft, Palette, Sparkles, UserCircle, Code2, CheckCircle2 } from 'lucide-react';
+import useAuthStore from '@/store/useAuthStore';
+import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
+
+export default function RegisterPage() {
+    const router = useRouter();
+    const { register, isAuthenticated } = useAuthStore();
+
+    const [formData, setFormData] = useState({
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        role: 'user',
+        acceptTerms: false,
+    });
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            router.push('/dashboard');
+        }
+    }, [isAuthenticated, router]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+    const validateEmail = (email: string) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    const validateUsername = (username: string) => {
+        return /^[a-zA-Z0-9_]{3,}$/.test(username);
+    };
+
+    const getPasswordStrength = (pass: string) => {
+        if (!pass) return 0;
+        let score = 0;
+        if (pass.length >= 6) score += 1;
+        if (pass.length >= 10) score += 1;
+        if (/[A-Z]/.test(pass)) score += 1;
+        if (/[0-9]/.test(pass)) score += 1;
+        if (/[^A-Za-z0-9]/.test(pass)) score += 1;
+        return score;
+    };
+
+    const passwordStrength = getPasswordStrength(formData.password);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!formData.username || !formData.email || !formData.password) {
+            toast.error('All fields are mandatory for your creative ID');
+            return;
+        }
+
+        if (!validateUsername(formData.username)) {
+            toast.error('Username must be at least 3 chars (alphanumeric/underscore)');
+            return;
+        }
+
+        if (!validateEmail(formData.email)) {
+            toast.error('Please enter a valid studio email');
+            return;
+        }
+
+        if (formData.password.length < 6) {
+            toast.error('Security requires at least 6 characters');
+            return;
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            toast.error('Master password and confirmation do not match');
+            return;
+        }
+
+        if (!formData.acceptTerms) {
+            toast.error('Please accept our studio guidelines');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const result = await register({
+                username: formData.username,
+                email: formData.email,
+                password: formData.password,
+                role: formData.role,
+            });
+
+            if (result.success) {
+                toast.success('Your workspace is ready! Redirecting...');
+                router.push('/dashboard');
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || 'Registration failed. Try a different identity.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-[#020617] flex overflow-hidden">
+            {/* Left Side: Art Showcase */}
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-black">
+                <motion.div
+                    initial={{ scale: 1.1, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 1.5 }}
+                    className="absolute inset-0"
+                >
+                    <img
+                        src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=1200&q=80"
+                        className="w-full h-full object-cover opacity-60"
+                        alt="Art Showcase"
+                    />
+                </motion.div>
+
+                <div className="absolute inset-0 bg-gradient-to-br from-[#020617] via-transparent to-pink-500/20" />
+
+                <div className="relative z-10 flex flex-col justify-between p-12 w-full">
+                    <Link href="/" className="flex items-center gap-2 group w-fit">
+                        <div className="p-2 rounded-xl bg-pixlr-gradient group-hover:scale-110 transition-transform">
+                            <Palette size={24} className="text-white" />
+                        </div>
+                        <span className="text-2xl font-black text-white tracking-tight">ArtBid Hub</span>
+                    </Link>
+
+                    <div className="max-w-lg">
+                        <motion.div
+                            initial={{ x: -50, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.5 }}
+                        >
+                            <div className="flex items-center gap-2 text-pink-500 font-black uppercase tracking-widest text-sm mb-4">
+                                <Sparkles size={16} />
+                                <span>The Creative Revolution</span>
+                            </div>
+                            <h2 className="text-5xl font-black text-white mb-6 leading-tight">
+                                Unleash your <br />
+                                <span className="text-gradient">creative soul.</span>
+                            </h2>
+                            <p className="text-white/60 text-lg font-medium">
+                                Start your journey as a creator or developer in the world's most advanced art marketplace.
+                            </p>
+                        </motion.div>
+                    </div>
+
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                            <span className="text-sm font-bold text-white/50">Real-time collaboration enabled</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <div className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse" />
+                            <span className="text-sm font-bold text-white/50">AI Studio V2.0 Access</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Right Side: Register Form */}
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-12 lg:py-24 relative overflow-y-auto custom-scrollbar">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[100px] pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-500/10 blur-[100px] pointer-events-none" />
+
+                <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    className="w-full max-w-md z-10 my-auto"
+                >
+                    <div className="mb-10">
+                        <Link href="/" className="lg:hidden flex items-center gap-2 mb-8 group w-fit">
+                            <ArrowLeft className="w-5 h-5 text-primary group-hover:-translate-x-1 transition-transform" />
+                            <span className="text-sm font-bold text-white/50">Back to Home</span>
+                        </Link>
+                        <h1 className="text-4xl font-black mb-4">Create Account</h1>
+                        <p className="text-white/40 font-medium">Join the community of 100k+ digital visionaries</p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div className="grid grid-cols-2 gap-4 mb-2">
+                            <RoleCard
+                                icon={<UserCircle size={20} />}
+                                label="Artist"
+                                active={formData.role === 'user'}
+                                onClick={() => setFormData(p => ({ ...p, role: 'user' }))}
+                            />
+                            <RoleCard
+                                icon={<Code2 size={20} />}
+                                label="Developer"
+                                active={formData.role === 'developer'}
+                                onClick={() => setFormData(p => ({ ...p, role: 'developer' }))}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-xs font-black uppercase tracking-widest text-white/30 ml-1">Username</label>
+                            <div className="relative group">
+                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20 group-focus-within:text-primary transition-colors" />
+                                <input
+                                    type="text"
+                                    name="username"
+                                    value={formData.username}
+                                    onChange={handleChange}
+                                    placeholder="johndoe"
+                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:bg-white/10 transition-all font-medium"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-xs font-black uppercase tracking-widest text-white/30 ml-1">Email Address</label>
+                            <div className="relative group">
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20 group-focus-within:text-primary transition-colors" />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    placeholder="your@email.com"
+                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:bg-white/10 transition-all font-medium"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-xs font-black uppercase tracking-widest text-white/30 ml-1">Password</label>
+                                <div className="relative group">
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20 group-focus-within:text-primary transition-colors" />
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        placeholder="••••••••"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:bg-white/10 transition-all font-medium text-xs"
+                                        required
+                                    />
+                                    <div className="flex gap-1 mt-2 px-1">
+                                        {[1, 2, 3, 4, 5].map((level) => (
+                                            <div
+                                                key={level}
+                                                className={`h-1 flex-1 rounded-full transition-all duration-500 ${passwordStrength >= level
+                                                        ? (passwordStrength <= 2 ? 'bg-red-500' : passwordStrength <= 4 ? 'bg-yellow-500' : 'bg-primary')
+                                                        : 'bg-white/5'
+                                                    }`}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-black uppercase tracking-widest text-white/30 ml-1">Confirm</label>
+                                <div className="relative group">
+                                    <input
+                                        type="password"
+                                        name="confirmPassword"
+                                        value={formData.confirmPassword}
+                                        onChange={handleChange}
+                                        placeholder="••••••••"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-4 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:bg-white/10 transition-all font-medium text-xs"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-3 ml-1 py-2">
+                            <input
+                                type="checkbox"
+                                id="acceptTerms"
+                                name="acceptTerms"
+                                checked={formData.acceptTerms}
+                                onChange={handleChange}
+                                className="w-5 h-5 mt-0.5 rounded-lg border-white/10 bg-white/5 text-primary focus:ring-primary/50 cursor-pointer"
+                                required
+                            />
+                            <label htmlFor="acceptTerms" className="text-xs font-bold text-white/40 cursor-pointer select-none leading-relaxed">
+                                I agree to the <Link href="/terms" className="text-primary hover:text-white underline decoration-white/10">Terms of Service</Link> and <Link href="/privacy" className="text-primary hover:text-white underline decoration-white/10">Privacy Policy</Link>.
+                            </label>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={`w-full py-5 rounded-2xl font-black text-lg transition-all flex items-center justify-center gap-3 ${loading
+                                ? 'bg-white/5 text-white/20 cursor-not-allowed'
+                                : 'bg-pixlr-gradient text-white shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]'
+                                }`}
+                        >
+                            {loading ? (
+                                <>
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    <span>Initializing...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span>Create My Account</span>
+                                    <CheckCircle2 size={20} />
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="mt-10 text-center">
+                        <p className="text-white/40 font-medium">
+                            Already have an account?{' '}
+                            <Link href="/login" className="text-primary font-black hover:text-white transition-colors ml-1">
+                                Sign In
+                            </Link>
+                        </p>
+                    </div>
+                </motion.div>
+            </div>
+        </div>
+    );
+}
+
+function RoleCard({ icon, label, active, onClick }: { icon: React.ReactNode, label: string, active: boolean, onClick: () => void }) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className={`p-4 rounded-2xl border transition-all flex items-center gap-3 flex-1 ${active
+                ? 'bg-primary/20 border-primary text-primary shadow-lg shadow-primary/10'
+                : 'bg-white/5 border-white/5 text-white/40 hover:border-white/10'
+                }`}
+        >
+            <span className={active ? 'text-primary' : 'text-white/20'}>{icon}</span>
+            <span className="text-xs font-black uppercase tracking-widest">{label}</span>
+        </button>
+    )
+}

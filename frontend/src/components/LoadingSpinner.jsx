@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8565edb0bc9754e023ad96e26ccd1c9454529b59e1d6cccfa3d4043dd4c5f6e4
-size 441
+export default function LoadingSpinner({ size = 'md' }) {
+    const sizeClasses = {
+        sm: 'w-4 h-4 border-2',
+        md: 'w-8 h-8 border-3',
+        lg: 'w-12 h-12 border-4',
+        xl: 'w-16 h-16 border-4',
+    };
+
+    return (
+        <div className="flex items-center justify-center">
+            <div className={`${sizeClasses[size]} border-primary border-t-transparent rounded-full animate-spin`}></div>
+        </div>
+    );
+}
