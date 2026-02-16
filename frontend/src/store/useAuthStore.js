@@ -76,9 +76,10 @@ const useAuthStore = create((set, get) => ({
             const response = await authAPI.register(data);
             const { token, user } = response.data;
 
-            // Store in localStorage
+            // Store in localStorage & Cookie
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
+            document.cookie = `token=${token}; path=/; max-age=2592000; SameSite=Lax`;
 
             // Update state
             set({
@@ -90,7 +91,6 @@ const useAuthStore = create((set, get) => ({
             // Initialize socket
             initSocket(token);
 
-            toast.success(`Welcome to ArtBid Hub, ${user.username}!`);
             return { success: true, user };
         } catch (error) {
             const message = error.response?.data?.message || 'Registration failed';

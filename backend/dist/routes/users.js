@@ -4,6 +4,7 @@ const express_1 = require("express");
 const userController_1 = require("../controllers/userController");
 const auth_1 = require("../middleware/auth");
 const router = (0, express_1.Router)();
+router.get('/search', userController_1.searchUsers);
 router.get('/profile/:username', userController_1.getUserProfile);
 router.put('/profile', auth_1.authenticate, userController_1.updateProfile);
 router.post('/:userId/follow', auth_1.authenticate, userController_1.followUser);

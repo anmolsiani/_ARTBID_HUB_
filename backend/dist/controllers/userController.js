@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFollowing = exports.getFollowers = exports.followUser = exports.updateProfile = exports.getUserProfile = void 0;
+exports.searchUsers = exports.getFollowing = exports.getFollowers = exports.followUser = exports.updateProfile = exports.getUserProfile = void 0;
 const User_1 = require("../models/User");
 const Artwork_1 = require("../models/Artwork");
 const getUserProfile = async (req, res) => {
@@ -124,4 +124,32 @@ const getFollowing = async (req, res) => {
     }
 };
 exports.getFollowing = getFollowing;
+const searchUsers = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q || typeof q !== 'string' || q.trim().length < 1) {
+            return res.json({ users: [] });
+        }
+        const query = q.trim();
+        const users = await User_1.User.find({
+            $or: [
+                { username: { $regex: query, $options: 'i' } },
+                { displayName: { $regex: query, $options: 'i' } }
+            ]
+        })
+            .select('username displayName avatar bio role followers following')
+            .limit(20)
+            .lean();
+        const result = users.map(u => ({
+            ...u,
+            followersCount: u.followers ? u.followers.length : 0,
+            followingCount: u.following ? u.following.length : 0,
+        }));
+        return res.json({ users: result });
+    } catch (error) {
+        console.error('Search users error:', error);
+        return res.status(500).json({ message: 'Failed to search users' });
+    }
+};
+exports.searchUsers = searchUsers;
 //# sourceMappingURL=userController.js.map

@@ -8,7 +8,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const User_1 = require("../models/User");
 const signup = async (req, res) => {
     try {
-        const { email, username, displayName, password } = req.body;
+        const { email, username, displayName, password, role } = req.body;
         const existingUser = await User_1.User.findOne({
             $or: [{ email }, { username }],
         });
@@ -23,8 +23,9 @@ const signup = async (req, res) => {
         const user = await User_1.User.create({
             email,
             username: username.toLowerCase(),
-            displayName,
+            displayName: displayName || username,
             password,
+            ...(role && ['user', 'developer'].includes(role) ? { role } : {}),
         });
         const token = jsonwebtoken_1.default.sign({
             id: user._id.toString(),

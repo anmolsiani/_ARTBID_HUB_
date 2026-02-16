@@ -173,6 +173,13 @@ export default function DashboardPage() {
                                     icon={<LayoutGrid size={24} />}
                                     color="bg-blue-500"
                                 />
+                                <ToolItem
+                                    href="/search"
+                                    title="Search People"
+                                    desc="Find artists by username"
+                                    icon={<Search size={24} />}
+                                    color="bg-yellow-500"
+                                />
                             </div>
                         </motion.div>
 

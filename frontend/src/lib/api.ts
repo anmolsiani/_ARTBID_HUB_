@@ -50,35 +50,36 @@ api.interceptors.response.use(
 );
 
 export const authAPI = {
-    register: (data: any) => api.post('/auth/register', data),
+    register: (data: any) => api.post('/auth/signup', data),
     login: (data: any) => api.post('/auth/login', data),
     getMe: () => api.get('/auth/me'),
     logout: () => api.post('/auth/logout'),
 };
 
 export const artAPI = {
-    getAll: (params?: any) => api.get('/arts', { params }),
-    getById: (id: string) => api.get(`/arts/${id}`),
-    create: (data: any) => api.post('/arts', data, {
+    getAll: (params?: any) => api.get('/artworks', { params }),
+    getById: (id: string) => api.get(`/artworks/${id}`),
+    create: (data: any) => api.post('/artworks', data, {
         headers: { 'Content-Type': 'multipart/form-data' }
     }),
-    update: (id: string, data: any) => api.put(`/arts/${id}`, data),
-    delete: (id: string) => api.delete(`/arts/${id}`),
-    like: (id: string) => api.post(`/arts/${id}/like`),
-    comment: (id: string, data: any) => api.post(`/arts/${id}/comment`, data),
+    update: (id: string, data: any) => api.put(`/artworks/${id}`, data),
+    delete: (id: string) => api.delete(`/artworks/${id}`),
+    like: (id: string) => api.post(`/artworks/${id}/like`),
+    comment: (id: string, data: any) => api.post(`/artworks/${id}/comment`, data),
 };
 
 export const userAPI = {
-    getProfile: (username: string) => api.get(`/users/${username}`),
+    getProfile: (username: string) => api.get(`/users/profile/${username}`),
     updateProfile: (data: any) => api.put('/users/profile', data),
     follow: (userId: string) => api.post(`/users/${userId}/follow`),
     unfollow: (userId: string) => api.post(`/users/${userId}/unfollow`),
+    searchUsers: (query: string) => api.get(`/users/search?q=${encodeURIComponent(query)}`),
 };
 
 export const messageAPI = {
     getConversations: () => api.get('/messages/conversations'),
-    getMessages: (userId: string) => api.get(`/messages/${userId}`),
-    send: (data: any) => api.post('/messages', data),
+    getMessages: (conversationId: string) => api.get(`/messages/${conversationId}`),
+    send: (data: any) => api.post('/messages/send', data),
 };
 
 export const aiAPI = {

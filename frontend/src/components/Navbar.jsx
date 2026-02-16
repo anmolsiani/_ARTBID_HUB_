@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, Search, User, LogOut, Settings, LayoutDashboard, Upload, MessageCircle, Palette, Sparkles } from 'lucide-react';
+import { Menu, X, Search, User, LogOut, Settings, LayoutDashboard, Upload, MessageCircle, Palette, Sparkles, Users } from 'lucide-react';
 import useAuthStore from '@/store/useAuthStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthModal from './AuthModal';
@@ -87,6 +87,12 @@ export default function Navbar() {
                                 </span>
                             </NavLink>
                             <NavLink href="/messages" active={pathname === '/messages'} onClick={(e) => handleProtectedLink(e, '/messages')}>Messages</NavLink>
+                            <NavLink href="/search" active={pathname === '/search'}>
+                                <span className="flex items-center gap-1.5">
+                                    <Users size={14} className="text-primary" />
+                                    People
+                                </span>
+                            </NavLink>
                         </div>
 
                         {/* Auth & Profile */}
@@ -189,6 +195,7 @@ export default function Navbar() {
                                 <MobileLink href="/explore" onClick={() => setMobileMenuOpen(false)}>Explore</MobileLink>
                                 <MobileLink href="/ai-generator" onClick={(e) => handleProtectedLink(e, '/ai-generator')}>AI Studio</MobileLink>
                                 <MobileLink href="/messages" onClick={(e) => handleProtectedLink(e, '/messages')}>Messages</MobileLink>
+                                <MobileLink href="/search" onClick={() => setMobileMenuOpen(false)}>People</MobileLink>
                                 <MobileLink href="/about" onClick={() => setMobileMenuOpen(false)}>About</MobileLink>
 
                                 <div className="pt-10 border-t border-white/5 space-y-4">

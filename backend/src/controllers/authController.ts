@@ -22,7 +22,7 @@ const loginSchema = z.object({
 
 export const signup = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-        const { email, username, displayName, password } = req.body;
+        const { email, username, displayName, password, role } = req.body;
 
         const existingUser = await User.findOne({
             $or: [{ email }, { username }],
@@ -40,8 +40,9 @@ export const signup = async (req: AuthRequest, res: Response): Promise<void> => 
         const user = await User.create({
             email,
             username: username.toLowerCase(),
-            displayName,
+            displayName: displayName || username,
             password,
+            ...(role && ['user', 'developer'].includes(role) ? { role } : {}),
         });
 
         const token = jwt.sign(
