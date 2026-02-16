@@ -1,18 +1,28 @@
-frontend/node_modules/@next/swc-linux-x64-gnu/*.node filter=lfs diff=lfs merge=lfs -text
+# Binary files that should use LFS
 *.node filter=lfs diff=lfs merge=lfs -text
-frontend/**/*.zip filter=lfs diff=lfs merge=lfs -text
-frontend/**/*.pth filter=lfs diff=lfs merge=lfs -text
-frontend/**/node_modules.tar.gz filter=lfs diff=lfs merge=lfs -text
 *.zip filter=lfs diff=lfs merge=lfs -text
 *.pth filter=lfs diff=lfs merge=lfs -text
 *.bin filter=lfs diff=lfs merge=lfs -text
 *.h5 filter=lfs diff=lfs merge=lfs -text
-frontend/** filter=lfs diff=lfs merge=lfs -text
-frontend/**/*.js filter=lfs diff=lfs merge=lfs -text
-frontend/**/*.css filter=lfs diff=lfs merge=lfs -text
-frontend/**/*.json filter=lfs diff=lfs merge=lfs -text
-frontend/node_modules/@next/swc-linux-x64-musl/next-swc.linux-x64-musl.node filter=lfs diff=lfs merge=lfs -text
-frontend/node_modules/@next/swc-linux-x64-gnu/next-swc.linux-x64-gnu.node filter=lfs diff=lfs merge=lfs -text
-frontend/.next/** filter=lfs diff=lfs merge=lfs -text
-frontend/public/**/*.png filter=lfs diff=lfs merge=lfs -text
-frontend/public/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+*.png filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.gif filter=lfs diff=lfs merge=lfs -text
+*.ico filter=lfs diff=lfs merge=lfs -text
+*.pdf filter=lfs diff=lfs merge=lfs -text
+
+# Ensure code files are NEVER treated as LFS
+*.js text
+*.jsx text
+*.ts text
+*.tsx text
+*.json text
+*.css text
+*.html text
+*.md text
+.gitignore text
+.gitattributes text
+package.json text
+package-lock.json text
+tsconfig.json text
+next.config.mjs text
