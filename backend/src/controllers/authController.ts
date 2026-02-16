@@ -42,7 +42,7 @@ export const signup = async (req: AuthRequest, res: Response): Promise<void> => 
             username: username.toLowerCase(),
             displayName: displayName || username,
             password,
-            ...(role && ['user', 'developer'].includes(role) ? { role } : {}),
+            ...(role && ['user', 'artist', 'developer', 'admin', 'collector'].includes(role) ? { role } : {}),
         });
 
         const token = jwt.sign(
