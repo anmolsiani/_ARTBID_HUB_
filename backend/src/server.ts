@@ -1,16 +1,28 @@
 
+// 1. Load environment variables at the VERY TOP
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express, { Express, Request, Response, NextFunction } from 'express';
-import mongoose from 'mongoose';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import http from 'http';
 import { Server } from 'socket.io';
 import rateLimit from 'express-rate-limit';
+
+// 2. Import Database Connection
+import { connectDB } from './config/database';
+
+// 3. Import Routes
 import authRoutes from './routes/auth';
 
-dotenv.config();
+// Debug check for Environment Variables
+console.log('--- Environment Check ---');
+console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`PORT: ${process.env.PORT}`);
+console.log(`MONGODB_URI Loaded: ${process.env.MONGODB_URI ? 'Yes' : 'No'}`);
+console.log('-------------------------');
 
 const app: Express = express();
 const server = http.createServer(app as any);
@@ -18,8 +30,8 @@ const PORT = process.env.PORT || 5000;
 
 // Rate Limiting
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per windowMs
+    windowMs: 15 * 60 * 1000,
+    max: 100,
     standardHeaders: true,
     legacyHeaders: false,
 });
@@ -29,7 +41,7 @@ app.use(limiter as any);
 app.use(helmet());
 app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    credentials: true, // Important for cookies/auth
+    credentials: true,
 }));
 app.use(morgan('dev'));
 app.use(express.json());
@@ -44,34 +56,20 @@ const io = new Server(server as any, {
 });
 
 io.on('connection', (socket) => {
-    // console.log('New client connected:', socket.id);
     socket.on('disconnect', () => {
-        // console.log('Client disconnected:', socket.id);
     });
 });
-
-// Database Connection with Retry
-const connectDB = async (retries = 5) => {
-    try {
-        const conn = await mongoose.connect(process.env.MONGODB_URI as string);
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
-    } catch (error: any) {
-        console.error(`Error: ${error.message}`);
-        if (retries === 0) {
-            console.error('Could not connect to MongoDB after multiple retries. Exiting.');
-            process.exit(1);
-        }
-        console.log(`Retrying connection in 5 seconds... (${retries} attempts left)`);
-        setTimeout(() => connectDB(retries - 1), 5000);
-    }
-};
 
 // Routes
 app.use('/api/auth', authRoutes);
 
 // Health Check
 app.get('/health', (req: Request, res: Response) => {
-    res.status(200).json({ status: 'OK', uptime: process.uptime() });
+    res.status(200).json({
+        status: 'OK',
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV
+    });
 });
 
 // 404 Handler
@@ -91,9 +89,14 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-// Start Server
-connectDB().then(() => {
+// Start Server & Connect Database
+const startServer = async () => {
+    // Attempt Database Connection
+    await connectDB();
+
     server.listen(PORT, () => {
-        console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+        console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
     });
-});
+};
+
+startServer();
