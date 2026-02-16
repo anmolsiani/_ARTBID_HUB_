@@ -43,7 +43,7 @@ export const signup = async (req: AuthRequest, res: Response): Promise<void> => 
             displayName: displayName || username,
             password,
             ...(role && ['user', 'artist', 'developer', 'admin', 'collector'].includes(role) ? { role } : {}),
-        });
+        } as any);
 
         const token = jwt.sign(
             {
@@ -51,9 +51,9 @@ export const signup = async (req: AuthRequest, res: Response): Promise<void> => 
                 email: user.email,
                 username: user.username,
                 role: user.role,
-            },
+            } as any,
             process.env.JWT_SECRET || 'secret',
-            { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+            { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as any
         );
 
         res.status(201).json({
@@ -87,13 +87,12 @@ export const login = async (req: AuthRequest, res: Response): Promise<void> => {
 
         const token = jwt.sign(
             {
-                id: user._id.toString(),
+                id: user._id,
                 email: user.email,
-                username: user.username,
                 role: user.role,
-            },
+            } as any,
             process.env.JWT_SECRET || 'secret',
-            { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+            { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as any
         );
 
         res.json({

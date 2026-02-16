@@ -93,11 +93,6 @@ const userSchema = new Schema({
     timestamps: true,
 });
 
-// Indexes for faster queries
-userSchema.index({ username: 1 });
-userSchema.index({ email: 1 });
-userSchema.index({ googleId: 1 });
-
 // Pre-save hook to hash password
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();

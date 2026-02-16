@@ -13,7 +13,7 @@ import authRoutes from './routes/auth';
 dotenv.config();
 
 const app: Express = express();
-const server = http.createServer(app);
+const server = http.createServer(app as any);
 const PORT = process.env.PORT || 5000;
 
 // Rate Limiting
@@ -25,7 +25,7 @@ const limiter = rateLimit({
 });
 
 // Middleware
-app.use(limiter);
+app.use(limiter as any);
 app.use(helmet());
 app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
@@ -36,7 +36,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Socket.io Setup
-const io = new Server(server, {
+const io = new Server(server as any, {
     cors: {
         origin: process.env.FRONTEND_URL || 'http://localhost:3000',
         credentials: true,
@@ -50,14 +50,19 @@ io.on('connection', (socket) => {
     });
 });
 
-// Database Connection
-const connectDB = async () => {
+// Database Connection with Retry
+const connectDB = async (retries = 5) => {
     try {
         const conn = await mongoose.connect(process.env.MONGODB_URI as string);
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error: any) {
         console.error(`Error: ${error.message}`);
-        process.exit(1);
+        if (retries === 0) {
+            console.error('Could not connect to MongoDB after multiple retries. Exiting.');
+            process.exit(1);
+        }
+        console.log(`Retrying connection in 5 seconds... (${retries} attempts left)`);
+        setTimeout(() => connectDB(retries - 1), 5000);
     }
 };
 
