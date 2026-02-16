@@ -3,6 +3,10 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+// 2. Fix for Node.js 18+ DNS resolution issues on Render
+import dns from 'node:dns';
+dns.setDefaultResultOrder('ipv4first');
+
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -11,10 +15,10 @@ import http from 'http';
 import { Server } from 'socket.io';
 import rateLimit from 'express-rate-limit';
 
-// 2. Import Database Connection
+// 3. Import Database Connection
 import { connectDB } from './config/database';
 
-// 3. Import Routes
+// 4. Import Routes
 import authRoutes from './routes/auth';
 
 // Debug check for Environment Variables
