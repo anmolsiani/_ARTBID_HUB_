@@ -1,25 +1,3 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
-
-const inter = Inter({ subsets: ['latin'] })
-
-export const metadata: Metadata = {
-    title: 'ArtBid Hub - Social Art Platform',
-    description: 'Discover, share, and trade amazing art. Join the creative community.',
-    keywords: ['art', 'gallery', 'social', 'auction', 'AI art', 'digital art'],
-}
-
-export default function RootLayout({
-    children,
-}: {
-    children: React.ReactNode
-}) {
-    return (
-        <html lang="en" suppressHydrationWarning>
-            <body className={inter.className}>
-                {children}
-            </body>
-        </html>
-    )
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:3bac636e36a6f2d931b9f0d561872e712c013b925de8f8e18618d3b1fb9a68b5
+size 1273

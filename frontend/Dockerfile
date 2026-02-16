@@ -1,21 +1,3 @@
-FROM node:18-alpine
-
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm ci
-
-# Copy source code
-COPY . .
-
-# Build Next.js app
-RUN npm run build
-
-# Expose port
-EXPOSE 3000
-
-# Start app
-CMD ["npm", "start"]
+version https://git-lfs.github.com/spec/v1
+oid sha256:500c43c7c49ca624c6b027eab3a53449bfabf26528e63a43feb6bae451ef8d15
+size 242
