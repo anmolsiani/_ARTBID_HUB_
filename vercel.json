@@ -1,13 +1,11 @@
 {
-    "github": {
-        "silent": true
-    },
-    "buildCommand": "cd frontend && npm install && npm run build",
-    "installCommand": "cd frontend && npm install",
-    "outputDirectory": "frontend/.next",
-    "framework": "nextjs",
-    "regions": [
-        "sfo1"
-    ],
-    "cleanUrls": true
+  "github": {
+    "silent": true
+  },
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "installCommand": "cd frontend && npm install",
+  "outputDirectory": "frontend/.next",
+  "framework": "nextjs",
+  "regions": ["sfo1"],
+  "cleanUrls": true
 }
